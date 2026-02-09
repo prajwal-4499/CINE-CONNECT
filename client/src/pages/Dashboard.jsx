@@ -14,7 +14,7 @@ function Dashboard() {
     const [portfolioUrl, setPortfolioUrl] = useState("");
     const [portfolio, setPortfolio] = useState([]);
 
-    // 🔹 Load user & profile
+    // 🔹 Load user profile
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             setUser(currentUser);
@@ -59,7 +59,7 @@ function Dashboard() {
             city: city.trim(),
             categories: categoriesArray,
             rating: 4.5,
-            portfolio: updatedPortfolio
+            portfolio: updatedPortfolio,
         };
 
         const docRef = doc(db, "photographers", user.uid);
@@ -85,60 +85,74 @@ function Dashboard() {
     if (loading) return <p>Loading dashboard...</p>;
 
     return (
-        <div className="dashboard-page">
+        <div className="dashboard-container">
             <div className="dashboard-card">
+                <h2>Photographer Dashboard</h2>
+
+                {user ? (
+                    <>
+                        <div className="form-group">
+                            <label>Email</label>
+                            <input value={user.email} disabled />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Studio / Photographer Name</label>
+                            <input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Royal Wedding Studio"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>City</label>
+                            <input
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="Pune"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Categories (comma separated)</label>
+                            <input
+                                value={categories}
+                                onChange={(e) => setCategories(e.target.value)}
+                                placeholder="Wedding, Engagement, Birthday"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Add Portfolio Image URL</label>
+                            <input
+                                value={portfolioUrl}
+                                onChange={(e) => setPortfolioUrl(e.target.value)}
+                                placeholder="https://example.com/photo.jpg"
+                            />
+                        </div>
+
+                        {/* SHOW ADDED IMAGES */}
+                        {portfolio.length > 0 && (
+                            <div className="portfolio-preview">
+                                {portfolio.map((img, index) => (
+                                    <img key={index} src={img} alt="portfolio" />
+                                ))}
+                            </div>
+                        )}
+
+                        <button className="save-btn" onClick={handleSave}>
+                            Save Profile
+                        </button>
+
+                        <button className="logout-btn" onClick={handleLogout}>
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <p>No user logged in</p>
+                )}
             </div>
-            <h2>Photographer Dashboard</h2>
-
-            {user ? (
-                <>
-                    <p><strong>Email:</strong> {user.email}</p>
-
-                    <label>Studio / Photographer Name</label>
-                    <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Royal Wedding Studio"
-                    />
-
-                    <br /><br />
-
-                    <label>City</label>
-                    <input
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="Pune"
-                    />
-
-                    <br /><br />
-
-                    <label>Categories (comma separated)</label>
-                    <input
-                        value={categories}
-                        onChange={(e) => setCategories(e.target.value)}
-                        placeholder="Wedding, Engagement, Birthday"
-                    />
-
-                    <br /><br />
-
-                    <label>Portfolio Image URL</label>
-                    <input
-                        value={portfolioUrl}
-                        onChange={(e) => setPortfolioUrl(e.target.value)}
-                        placeholder="https://example.com/photo.jpg"
-                    />
-
-                    <br /><br />
-
-                    <button onClick={handleSave}>Save Profile</button>
-
-                    <br /><br />
-
-                    <button onClick={handleLogout}>Logout</button>
-                </>
-            ) : (
-                <p>No user logged in</p>
-            )}
         </div>
     );
 }
