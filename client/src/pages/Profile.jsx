@@ -29,22 +29,19 @@ function Profile() {
         fetchPhotographer();
     }, [id]);
 
-    if (loading) {
-        return <p>Loading profile...</p>;
-    }
-
-    if (!photographer) {
-        return <p>Photographer not found.</p>;
-    }
+    if (loading) return <p>Loading profile...</p>;
+    if (!photographer) return <p>Photographer not found.</p>;
 
     return (
-        <div className="profile">
+        <div className="profile-page">
             {/* HEADER */}
             <div className="profile-header">
                 <h2>{photographer.name}</h2>
-                <p>City: {photographer.city}</p>
-                <p>Rating: ⭐ {photographer.rating}</p>
-                <p>Categories: {photographer.categories?.join(", ")}</p>
+                <p className="profile-city">{photographer.city}</p>
+                <p className="profile-rating">⭐ {photographer.rating}</p>
+                <p className="profile-categories">
+                    {photographer.categories?.join(", ")}
+                </p>
             </div>
 
             {/* PORTFOLIO */}
@@ -60,19 +57,21 @@ function Profile() {
                 <p>No portfolio images available.</p>
             )}
 
-            <br />
-            <div style={{ display: "flex", gap: "15px", marginTop: "20px" }}>
+            {/* CONTACT BUTTONS */}
+            <div className="contact-buttons">
                 {/* EMAIL */}
-                <a
-                    href={`mailto:${photographer.email}?subject=Photography Inquiry`}
-                >
-                    <button>Email</button>
-                </a>
+                {photographer.email && (
+                    <a
+                        href={`mailto:${photographer.email}?subject=Photography Inquiry`}
+                    >
+                        <button>Email</button>
+                    </a>
+                )}
 
-                {/* WHATSAPP */}
+                {/* WHATSAPP (optional) */}
                 {photographer.phone && (
                     <a
-                        href={`https://wa.me/${photographer.phone}?text=Hi%20I%20found%20your%20profile%20on%20Photographer%20Platform`}
+                        href={`https://wa.me/${photographer.phone}?text=Hi%20I%20found%20your%20profile%20on%20CINE-CONNECT`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -80,7 +79,6 @@ function Profile() {
                     </a>
                 )}
             </div>
-
         </div>
     );
 }
