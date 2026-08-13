@@ -1783,3 +1783,48 @@ textarea {
     flex-wrap: wrap;
   }
 }
+
+/* ─── Messages Page Layout ─── */
+.messages-container {
+    display: flex;
+    height: calc(100vh - 70px);
+    background-color: var(--slate-50);
+    overflow: hidden;
+}
+
+.chat-sidebar {
+    width: 350px;
+    background-color: var(--white);
+    border-right: 1px solid var(--slate-200);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--slate-50);
+}
+
+.mobile-back-btn {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .chat-sidebar {
+        width: 100%;
+    }
+    
+    .chat-main {
+        width: 100%;
+    }
+    
+    .hidden-on-mobile {
+        display: none !important;
+    }
+    
+    .mobile-back-btn {
+        display: block !important;
+    }
+}

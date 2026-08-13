@@ -139,10 +139,10 @@ function Messages() {
     const activeChat = chats.find(c => c.id === activeChatId);
 
     return (
-        <div style={{ display: 'flex', height: 'calc(100vh - 70px)', backgroundColor: 'var(--slate-50)', overflow: 'hidden' }}>
+        <div className="messages-container">
             
             {/* Sidebar (Chat List) */}
-            <div style={{ width: '350px', backgroundColor: 'var(--white)', borderRight: '1px solid var(--slate-200)', display: 'flex', flexDirection: 'column' }}>
+            <div className={`chat-sidebar ${activeChatId ? 'hidden-on-mobile' : ''}`}>
                 <div style={{ padding: '20px', borderBottom: '1px solid var(--slate-200)' }}>
                     <h2 style={{ margin: 0, fontSize: '24px', color: 'var(--slate-900)' }}>Messages</h2>
                 </div>
@@ -180,10 +180,17 @@ function Messages() {
             </div>
 
             {/* Main Chat Area */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--slate-50)' }}>
+            <div className={`chat-main ${!activeChatId ? 'hidden-on-mobile' : ''}`}>
                 {activeChat ? (
                     <>
-                        <div style={{ padding: '20px 30px', backgroundColor: 'var(--white)', borderBottom: '1px solid var(--slate-200)', display: 'flex', alignItems: 'center' }}>
+                        <div style={{ padding: '15px 20px', backgroundColor: 'var(--white)', borderBottom: '1px solid var(--slate-200)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                            <button 
+                                className="mobile-back-btn" 
+                                onClick={() => setActiveChatId(null)}
+                                style={{ border: 'none', background: 'none', fontSize: '24px', cursor: 'pointer', padding: '0 5px', color: 'var(--slate-600)' }}
+                            >
+                                ←
+                            </button>
                             <div>
                                 <h2 style={{ margin: 0, fontSize: '20px', color: 'var(--slate-900)' }}>{activeChat.jobTitle || "Job Inquiry"}</h2>
                                 <p style={{ margin: '5px 0 0', fontSize: '13px', color: 'var(--slate-500)' }}>
