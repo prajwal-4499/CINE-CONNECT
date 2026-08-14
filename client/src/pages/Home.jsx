@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { seedDatabase } from "../utils/seedData";
 
 function Home() {
     const navigate = useNavigate();
@@ -34,13 +35,65 @@ function Home() {
             image: "/images/car_shoot.png",
             desc: "Sleek automotive photography highlighting speed and design."
         },
+        {
+            name: "Fashion & Editorial",
+            image: "/images/fashion.png",
+            desc: "High-end modeling portfolios, beauty, and magazine shoots."
+        },
+        {
+            name: "Real Estate",
+            image: "/images/real_estate.png",
+            desc: "Professional property listings and interior design showcases."
+        },
+        {
+            name: "Product",
+            image: "/images/product.png",
+            desc: "High-quality studio shots for brands and e-commerce."
+        },
+        {
+            name: "Food & Beverage",
+            image: "/images/food.png",
+            desc: "Appetizing culinary photography for restaurants and cafes."
+        },
+        {
+            name: "Corporate",
+            image: "/images/corporate.png",
+            desc: "Professional headshots for LinkedIn and company profiles."
+        },
+        {
+            name: "Maternity",
+            image: "/images/maternity.png",
+            desc: "Beautiful and specialized photoshoots for expecting mothers."
+        },
+        {
+            name: "Pet Photography",
+            image: "/images/pet.png",
+            desc: "Fun, creative, and memorable portraits with your pets."
+        },
+        {
+            name: "Sports & Action",
+            image: "/images/sports.png",
+            desc: "Dynamic coverage of athletic events and extreme sports."
+        },
+        {
+            name: "Concerts & Nightlife",
+            image: "/images/concerts.png",
+            desc: "Vibrant live bands, festivals, and club photography."
+        },
     ];
+
+    const handleSeedData = async () => {
+        const confirmSeed = window.confirm("Are you sure you want to seed the database with demo users?");
+        if (confirmSeed) {
+            await seedDatabase();
+        }
+    };
 
     return (
         <div className="home-container">
             {/* HERO SECTION */}
             <header className="hero-section">
-                <h1 className="hero-title">CINE-CONNECT</h1>
+                <h1 className="hero-title" onClick={handleSeedData} style={{ cursor: "pointer" }}>CINE-CONNECT</h1>
                 <p className="hero-subtitle">
                     Find and book the perfect professional photographer for every special moment
                 </p>

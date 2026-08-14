@@ -34,6 +34,8 @@ function PhotographerDashboard({ user }) {
     const [portfolioUrl, setPortfolioUrl] = useState("");
     const [portfolio, setPortfolio] = useState([]);
     const [rating, setRating] = useState(5.0);
+    const [unavailableDates, setUnavailableDates] = useState([]);
+    const [newDate, setNewDate] = useState("");
     const [saveStatus, setSaveStatus] = useState("");
 
     // Pricing packages state
@@ -58,6 +60,7 @@ function PhotographerDashboard({ user }) {
                         setBio(data.bio || "");
                         setSelectedCategories(data.categories || []);
                         setPortfolio(data.portfolio || []);
+                        setUnavailableDates(data.unavailableDates || []);
                         setRating(data.rating !== undefined ? data.rating : 5.0);
                         if (data.packages && data.packages.length > 0) {
                             setPackages(data.packages);
@@ -135,6 +138,7 @@ function PhotographerDashboard({ user }) {
             rating: rating,
             portfolio: portfolio,
             packages: packages,
+            unavailableDates: unavailableDates,
         };
 
         setSaveStatus("Saving...");
@@ -270,6 +274,47 @@ function PhotographerDashboard({ user }) {
                                     </div>
                                 </div>
                             )}
+                        </div>
+
+                        {/* ─── UNAVAILABLE DATES ─── */}
+                        <div className="dashboard-section-card">
+                            <h3 className="section-title">Availability</h3>
+                            <p className="section-hint">Select dates you are fully booked or unavailable. Clients will see these dates on your profile.</p>
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                                <input 
+                                    type="date" 
+                                    value={newDate} 
+                                    onChange={(e) => setNewDate(e.target.value)} 
+                                    className="dashboard-input"
+                                    style={{ flex: 1 }}
+                                />
+                                <button 
+                                    type="button" 
+                                    onClick={() => {
+                                        if (newDate && !unavailableDates.includes(newDate)) {
+                                            setUnavailableDates([...unavailableDates, newDate]);
+                                            setNewDate("");
+                                        }
+                                    }}
+                                    className="btn-add"
+                                >
+                                    Add Date
+                                </button>
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                {unavailableDates.map((d, i) => (
+                                    <div key={i} style={{ background: 'var(--slate-100)', padding: '5px 10px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ fontSize: '14px', color: 'var(--slate-700)' }}>{new Date(d).toLocaleDateString()}</span>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setUnavailableDates(unavailableDates.filter(date => date !== d))}
+                                            style={{ background: 'none', border: 'none', color: 'var(--rose-500)', cursor: 'pointer', fontSize: '16px', lineHeight: 1 }}
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* ─── PRICING PACKAGES ─── */}

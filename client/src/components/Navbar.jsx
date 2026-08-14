@@ -6,6 +6,21 @@ import { useEffect, useState } from "react";
 function Navbar() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    
+    // Dark mode state
+    const [isDark, setIsDark] = useState(() => {
+        return localStorage.getItem("theme") === "dark";
+    });
+
+    useEffect(() => {
+        if (isDark) {
+            document.body.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.body.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        }
+    }, [isDark]);
 
     useEffect(() => {
         const unsub = auth.onAuthStateChanged((u) => setUser(u));
@@ -29,6 +44,13 @@ function Navbar() {
             </Link>
 
             <div className="nav-links">
+                <button 
+                    onClick={() => setIsDark(!isDark)} 
+                    style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', marginRight: '10px' }}
+                    title="Toggle Dark Mode"
+                >
+                    {isDark ? '☀️' : '🌙'}
+                </button>
                 <Link to="/" className="nav-link">Home</Link>
                 <Link to="/jobs" className="nav-link">Jobs</Link>
 

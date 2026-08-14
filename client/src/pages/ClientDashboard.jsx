@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 function ClientDashboard({ user }) {
     const navigate = useNavigate();
     const [requirements, setRequirements] = useState([]);
+    const [favoritePhotographers, setFavoritePhotographers] = useState([]);
+    const [activeTab, setActiveTab] = useState("jobs"); // "jobs" or "saved"
     const [loading, setLoading] = useState(true);
     
     // Form state
@@ -20,7 +22,28 @@ function ClientDashboard({ user }) {
 
     useEffect(() => {
         fetchRequirements();
+        fetchFavorites();
     }, [user]);
+
+    const fetchFavorites = async () => {
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists() && userDoc.data().favorites?.length > 0) {
+                const favIds = userDoc.data().favorites;
+                const photogs = await Promise.all(
+                    favIds.map(async (fid) => {
+                        const pDoc = await getDoc(doc(db, "photographers", fid));
+                        return pDoc.exists() ? { id: pDoc.id, ...pDoc.data() } : null;
+                    })
+                );
+                setFavoritePhotographers(photogs.filter(Boolean));
+            } else {
+                setFavoritePhotographers([]);
+            }
+        } catch (err) {
+            console.error("Error fetching favorites:", err);
+        }
+    };
 
     const fetchRequirements = async () => {
         try {
@@ -90,14 +113,28 @@ function ClientDashboard({ user }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                 <div>
                     <h1 style={{ fontSize: '28px', color: 'var(--secondary)', marginBottom: '5px' }}>Client Dashboard</h1>
-                    <p style={{ color: 'var(--slate-600)' }}>Manage your photography requirements</p>
+                    <p style={{ color: 'var(--slate-600)' }}>Manage your photography requirements and saved profiles</p>
                 </div>
                 <button onClick={handleLogout} className="btn-logout" style={{ padding: '10px 20px', backgroundColor: 'var(--error-bg)', color: 'var(--error)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}>
                     Logout
                 </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '20px', borderBottom: '1px solid var(--slate-200)', paddingBottom: '10px' }}>
+                <button 
+                    onClick={() => setActiveTab("jobs")}
+                    style={{ background: 'none', border: 'none', fontSize: '16px', fontWeight: activeTab === 'jobs' ? '600' : '400', color: activeTab === 'jobs' ? 'var(--primary)' : 'var(--slate-500)', cursor: 'pointer', padding: '5px 10px', borderBottom: activeTab === 'jobs' ? '2px solid var(--primary)' : 'none' }}>
+                    My Job Posts
+                </button>
+                <button 
+                    onClick={() => setActiveTab("saved")}
+                    style={{ background: 'none', border: 'none', fontSize: '16px', fontWeight: activeTab === 'saved' ? '600' : '400', color: activeTab === 'saved' ? 'var(--primary)' : 'var(--slate-500)', cursor: 'pointer', padding: '5px 10px', borderBottom: activeTab === 'saved' ? '2px solid var(--primary)' : 'none' }}>
+                    Saved Photographers
+                </button>
+            </div>
+
+            {activeTab === "jobs" && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
                 
                 {/* POST NEW REQUIREMENT FORM */}
                 <div style={{ backgroundColor: 'var(--white)', padding: '25px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)' }}>
@@ -191,7 +228,40 @@ function ClientDashboard({ user }) {
                     )}
                 </div>
 
-            </div>
+                </div>
+            )}
+            
+            {activeTab === "saved" && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                    {favoritePhotographers.length > 0 ? (
+                        favoritePhotographers.map((photog) => (
+                            <div key={photog.id} style={{ padding: '20px', backgroundColor: 'var(--white)', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+                                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'var(--slate-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+                                        {photog.name ? photog.name.charAt(0).toUpperCase() : "📷"}
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: '18px' }}>{photog.name}</h3>
+                                        <p style={{ margin: 0, fontSize: '14px', color: 'var(--slate-500)' }}>📍 {photog.city}</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => navigate(`/profile/${photog.id}`)}
+                                    style={{ marginTop: 'auto', padding: '10px', backgroundColor: 'var(--primary-50)', color: 'var(--primary-600)', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+                                >
+                                    View Profile
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', backgroundColor: 'var(--white)', borderRadius: '12px', color: 'var(--slate-500)' }}>
+                            <span style={{ fontSize: '40px', display: 'block', marginBottom: '10px' }}>🤍</span>
+                            <p>You haven't saved any photographers yet.</p>
+                            <button onClick={() => navigate("/")} style={{ marginTop: '15px', padding: '10px 20px', backgroundColor: 'var(--primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Explore Photographers</button>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
